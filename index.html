@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deutschland-Entdecker</title>
+<link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body>
+<div class="wrap">
+<p style="margin:0"><a class="back" href="../sachkunde/" data-app="../sachkunde/">⬅️ Sachkunde</a></p>
+<h1>🧭 Deutschland-Entdecker</h1>
+<div id="home" class="card">
+<p style="font-size:1.15rem;text-align:center">¡Hola, <span class="nm">amiguito</span>! Explora paisajes, vecinos y el mapa de Alemania. <a href="#" onclick="cambiarNombre();return false" style="font-size:.9rem;color:#2b8de2">✏️ Cambiar apodo</a></p>
+<button class="btn g" onclick="APP.showStudy()">📖 Estudiar</button>
+<div class="topics" id="topics"></div>
+<div class="row">
+<button class="btn" onclick="APP.startPractice()">✏️ Practicar</button>
+<button class="btn o" onclick="APP.startChallenge({timed:true,timeSec:60,count:14})">⏱️ Desafío 60 s</button>
+</div>
+<button class="btn outline" onclick="APP.startChallenge({timed:false,count:14})">🗺️ Desafío sin tiempo (mapas)</button>
+<p style="text-align:center;font-size:1.05rem">✅ Desafío con <b>13 o más y sin errores</b> = check verde por tema.<br>🏆 Récord: <b id="best">0</b><br><span class="hint" id="covNote"></span></p>
+<button class="btn gray" id="resetProg">🗑️ Borrar avance local</button>
+</div>
+
+<div id="study" class="card hid">
+<h2 id="stTitle"></h2>
+<div id="fc" class="card fc" onclick="APP.flipStudy()"></div>
+<p style="text-align:center">Toca la tarjeta para ver la explicación</p>
+<div class="row"><button class="btn gray" onclick="APP.moveStudy(-1)">⬅️ Anterior</button><button class="btn" onclick="APP.moveStudy(1)">Siguiente ➡️</button></div>
+<button class="btn r" onclick="APP.home()">🏠 Inicio</button>
+</div>
+
+<div id="play" class="card hid">
+<div class="stats"><span>✅ <span id="sc">0</span></span><span>🔥 Racha: <span id="st">0</span></span><span id="cnt"></span></div>
+<div id="tm" class="timer hid"></div>
+<p><span class="tag" id="tg"></span></p>
+<div class="q" id="qt"></div>
+<div id="opts"></div>
+<div id="msg" class="msg"></div>
+<div id="exp" class="exp hid"></div>
+<div id="helpBox" class="help hid"></div>
+<button class="btn outline" id="helpBtn" onclick="APP.revealHelp()">❓ Ayuda</button>
+<button class="btn g hid" id="nx" onclick="APP.goNext()">Siguiente ➡️</button>
+<button class="btn r" onclick="APP.finish(false)">Terminar</button>
+</div>
+
+<div id="sum" class="card hid">
+<h2 id="sumT"></h2>
+<p id="sumP" style="font-size:1.15rem"></p>
+<div id="sumL"></div>
+<button class="btn o hid" id="rep" onclick="APP.repeatErrors()">🔁 Repasar errores</button>
+<button class="btn" onclick="APP.home()">🏠 Inicio</button>
+</div>
+</div>
+
+<div id="nmBox" style="display:none;position:fixed;inset:0;background:rgba(31,42,68,.55);z-index:99;align-items:center;justify-content:center;padding:16px">
+<form id="nmForm" style="background:#fff;border-radius:20px;padding:24px;max-width:420px;width:100%;text-align:center">
+<p style="font-size:1.4rem;font-weight:700;margin:0 0 12px">👋 ¿Cómo te llamas?</p>
+<p>Escribe tu apodo (opcional)</p>
+<input id="nmIn" maxlength="20" autocomplete="off" style="width:100%;font-size:1.4rem;padding:12px;border:2px solid #2b8de2;border-radius:12px;text-align:center">
+<button type="submit" style="width:100%;font-size:1.3rem;padding:14px;margin-top:12px;border:0;border-radius:14px;background:#22a35a;color:#fff;font-weight:700">¡Listo! ✅</button>
+</form></div>
+
+<script src="../shared/common.js"></script>
+<script src="../shared/maps.js"></script>
+<script src="../shared/landmarks.js"></script>
+<script src="../shared/engine.js"></script>
+<script>
+const NEIGHBORS=["Dänemark","Polen","Tschechien","Österreich","Schweiz","Frankreich","Luxemburg","Belgien","Niederlande"];
+window.APP=SachApp.createApp({
+  appId:"entdecker",
+  checkKey:"sachkunde_check_entdecker",
+  bestKey:"sachkunde_entdecker_best",
+  challengeWin:13,
+  practiceSize:7,
+  challengeSize:14,
+  showObjectiveReport:true,
+  neighborEntities:NEIGHBORS,
+  masteryEntities:[...NEIGHBORS,"München","Stuttgart","Frankfurt am Main","Köln","Hamburg","Berlin","Elbe","Rhein","Main","Donau","Nordsee","Ostsee","Sylt","Rügen","Föhr","Amrum"],
+  topics:[
+    {id:"kompass",icon:"🧭",label:"Europa-Kompass (Lage & Nachbarn)",
+      skills:["germany_in_europe","continent","neighbor_count","neighbor_map","neighbor_membership","neighbor_false_list","heart_europe_metaphor","north_country_error"],
+      study:[
+        {front:"Wo liegt Deutschland?",back:"Deutschland liegt in der <b>Mitte von Europa</b> (Herz Europas).",map:{kind:"europe",highlight:"Deutschland"}},
+        {front:"Wie viele Nachbarländer?",back:"Deutschland hat <b>neun</b> direkte Nachbarländer. Die Nordsee ist ein <b>Meer</b>, kein Land.",map:{kind:"europe"}},
+        {front:"Norden / Osten / Süden / Westen",back:"Norden: Dänemark · Osten: Polen, Tschechien · Süden: Österreich, Schweiz · Westen: Frankreich, Luxemburg, Belgien, Niederlande."}
+      ]},
+    {id:"pass",icon:"🛂",label:"Nachbar-Pass (Land ↔ Hauptstadt)",
+      skills:["neighbor_capital","neighbor_capital_inverse"],
+      study:[
+        {front:"Dänemark → ?",back:"Kopenhagen"},
+        {front:"Polen → ?",back:"Warschau"},
+        {front:"Tschechien → ?",back:"Prag"},
+        {front:"Österreich → ?",back:"Wien"},
+        {front:"Schweiz → ?",back:"Bern (Bundesstadt)"},
+        {front:"Frankreich → ?",back:"Paris"},
+        {front:"Luxemburg → ?",back:"Luxemburg"},
+        {front:"Belgien → ?",back:"Brüssel"},
+        {front:"Niederlande → ?",back:"Amsterdam"}
+      ]},
+    {id:"land",icon:"🏞️",label:"Vom Meer zu den Alpen & Inseln",
+      skills:["landscape_sequence","landscape_region","north_full_sentence","island_examples","three_islands","island_category","alps_location","cardinal_seas","coast_beach","travel_landscape"],
+      study:[
+        {front:"Norden → Mitte → Süden",back:"Norden: meist flach, Küsten · Mitte: Wälder & Mittelgebirge · Süden: Alpen"},
+        {front:"Inseln",back:"Sylt, Rügen, Föhr, Amrum — das sind Inseln."},
+        {front:"Meere im Norden",back:"Nordsee und Ostsee"}
+      ]},
+    {id:"karte",icon:"🗺️",label:"Kartenlabor (Städte, Flüsse, Meere)",
+      skills:["city_map","river_map","sea_map","city_river_relation","map_categories","travel_city_river"],
+      study:[
+        {front:"Sechs wichtige Städte auf der Karte",back:"1 München · 2 Stuttgart · 3 Frankfurt am Main · 4 Köln · 5 Hamburg · 6 Berlin<br><i>Nicht als „sechs größte“ Ranking lernen.</i>",map:{kind:"layers",layer:"cities"}},
+        {front:"Vier Flüsse",back:"a Elbe · b Rhein · c Main · d Donau<br>Stuttgart liegt nicht am Rhein.",map:{kind:"layers",layer:"rivers"}},
+        {front:"Zwei Meere",back:"A Nordsee (nordwestlich) · B Ostsee (nordöstlich)",map:{kind:"layers",layer:"seas"}}
+      ]},
+    {id:"reise",icon:"🧳",label:"Reise mit Hinweisen",
+      skills:["travel_city_river","travel_landscape","vocabulary_context"],
+      study:[
+        {front:"Ich suche die Stadt am Main",back:"Frankfurt am Main"},
+        {front:"Stadt an der Elbe (Norden)",back:"Hamburg"},
+        {front:"Stadt am Rhein (Westen)",back:"Köln"}
+      ]}
+  ]
+});
+window.ASK_NAME=false;
+window.APP.init().catch(e=>{document.body.innerHTML="<p>Error al cargar: "+e.message+"</p>"});
+</script>
+</body></html>
